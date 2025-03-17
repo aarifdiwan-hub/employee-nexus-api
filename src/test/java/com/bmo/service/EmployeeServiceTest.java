@@ -1,7 +1,8 @@
 package com.bmo.service;
 
+import com.bmo.dto.EmployeeDto;
+import com.bmo.entity.EmployeeEntity;
 import com.bmo.exception.EmployeeNotFoundException;
-import com.bmo.model.Employee;
 import com.bmo.repository.EmployeeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,128 +28,124 @@ class EmployeeServiceTest {
     @InjectMocks
     private EmployeeService employeeService;
 
-    private Employee testEmployee;
+    private EmployeeEntity testEntity;
+    private EmployeeDto testDto;
 
     @BeforeEach
     void setUp() {
-        testEmployee = Employee.createEmployee("John Doe", "Engineering");
+        testEntity = new EmployeeEntity(1L, "Aarif Diwan", "Engineering", 1L);
+        testDto = new EmployeeDto(1L, "Aarif Diwan", "Engineering", 1L);
     }
 
     @Test
-    void givenEmployeesInRepository_whenGetAllEmployees_thenReturnEmployeeList() {
+    void givenExistingEmployees_whenFetchingAll_thenReturnEmployeeSummaries() {
         // Given
-        List<Employee> employees = List.of(new Employee(1L, "John Doe", "IT", 1L));
-        when(employeeRepository.findAll()).thenReturn(employees);
+        List<EmployeeEntity> entities = List.of(testEntity);
+        when(employeeRepository.findAll()).thenReturn(entities);
 
         // When
-        List<Employee> result = employeeService.getAllEmployees();
+        List<EmployeeDto> result = employeeService.getAllEmployees();
 
         // Then
         assertEquals(1, result.size());
-        assertEquals("John Doe", result.get(0).name());
+        assertEquals(testDto, result.get(0));
         verify(employeeRepository).findAll();
     }
 
     @Test
-    void givenEmployeeExists_whenGetEmployeeById_thenReturnEmployee() {
+    void givenEmployeeIdExists_whenFetchingEmployeeDetails_thenReturnEmployeeSummary() {
         // Given
-        Long id = 1L;
-        Employee employee = new Employee(id, "John Doe", "IT", 1L);
-        when(employeeRepository.findById(id)).thenReturn(Optional.of(employee));
+        when(employeeRepository.findById(1L)).thenReturn(Optional.of(testEntity));
 
         // When
-        Employee result = employeeService.getEmployeeById(id);
+        EmployeeDto result = employeeService.getEmployeeById(1L);
 
         // Then
         assertNotNull(result);
-        assertEquals("John Doe", result.name());
-        verify(employeeRepository).findById(id);
+        assertEquals(testDto, result);
+        verify(employeeRepository).findById(1L);
     }
 
     @Test
-    void givenEmployeeDoesNotExist_whenGetEmployeeById_thenThrowException() {
+    void givenInvalidEmployeeId_whenFetchingEmployeeDetails_thenThrowNotFoundException() {
         // Given
-        Long id = 1L;
-        when(employeeRepository.findById(id)).thenReturn(Optional.empty());
+        when(employeeRepository.findById(1L)).thenReturn(Optional.empty());
 
         // When/Then
-        assertThrows(EmployeeNotFoundException.class, () -> employeeService.getEmployeeById(id));
-        verify(employeeRepository).findById(id);
+        assertThrows(EmployeeNotFoundException.class,
+                () -> employeeService.getEmployeeById(1L));
+        verify(employeeRepository).findById(1L);
     }
 
     @Test
-    void givenValidEmployee_whenCreateEmployee_thenReturnSavedEmployee() {
+    void givenValidEmployeeDetails_whenCreatingEmployee_thenReturnSavedEmployeeSummary() {
         // Given
-        when(employeeRepository.save(any(Employee.class))).thenReturn(testEmployee);
+        when(employeeRepository.save(any(EmployeeEntity.class))).thenReturn(testEntity);
 
         // When
-        Employee result = employeeService.createEmployee(testEmployee);
+        EmployeeDto result = employeeService.createEmployee(testDto);
 
         // Then
         assertNotNull(result);
-        assertEquals(testEmployee.name(), result.name());
-        assertEquals(testEmployee.department(), result.department());
-        verify(employeeRepository).save(testEmployee);
+        assertEquals(testDto, result);
+        verify(employeeRepository).save(any(EmployeeEntity.class));
     }
 
     @Test
-    void givenExistingEmployee_whenUpdateEmployee_thenReturnUpdatedEmployee() {
+    void givenExistingEmployee_whenUpdatingDetails_thenReturnUpdatedEmployeeSummary() {
         // Given
-        Long id = 1L;
-        Employee existingEmployee = new Employee(id, "John Doe", "IT", 1L);
-        Employee updatedEmployee = new Employee(id, "John Smith", "Finance", 1L);
-        
-        when(employeeRepository.findById(id)).thenReturn(Optional.of(existingEmployee));
-        when(employeeRepository.save(any(Employee.class))).thenReturn(updatedEmployee);
+        EmployeeDto updateDto = new EmployeeDto(1L, "John Smith", "Finance", 1L);
+        EmployeeEntity updatedEntity = new EmployeeEntity(1L, "John Smith", "Finance", 1L);
+
+        when(employeeRepository.findById(1L)).thenReturn(Optional.of(testEntity));
+        when(employeeRepository.save(any(EmployeeEntity.class))).thenReturn(updatedEntity);
 
         // When
-        Employee result = employeeService.updateEmployee(id, updatedEmployee);
+        EmployeeDto result = employeeService.updateEmployee(1L, updateDto);
 
         // Then
         assertNotNull(result);
         assertEquals("John Smith", result.name());
         assertEquals("Finance", result.department());
-        verify(employeeRepository).findById(id);
-        verify(employeeRepository).save(any(Employee.class));
+        verify(employeeRepository).findById(1L);
+        verify(employeeRepository).save(any(EmployeeEntity.class));
     }
 
     @Test
-    void givenNonExistingEmployee_whenUpdateEmployee_thenThrowException() {
+    void givenNonExistingEmployee_whenUpdatingDetails_thenThrowNotFoundException() {
         // Given
-        Long id = 1L;
-        when(employeeRepository.findById(id)).thenReturn(Optional.empty());
+        when(employeeRepository.findById(1L)).thenReturn(Optional.empty());
 
         // When/Then
-        assertThrows(EmployeeNotFoundException.class, 
-            () -> employeeService.updateEmployee(id, testEmployee));
-        verify(employeeRepository).findById(id);
-        verify(employeeRepository, never()).save(any(Employee.class));
+        assertThrows(EmployeeNotFoundException.class,
+                () -> employeeService.updateEmployee(1L, testDto));
+        verify(employeeRepository).findById(1L);
+        verify(employeeRepository, never()).save(any(EmployeeEntity.class));
     }
 
     @Test
-    void givenExistingEmployee_whenDeleteEmployee_thenDeleteSuccessfully() {
+    void givenExistingEmployee_whenDeletingEmployee_thenRemoveSuccessfully() {
         // Given
-        Long id = 1L;
-        when(employeeRepository.existsById(id)).thenReturn(true);
-        doNothing().when(employeeRepository).deleteById(id);
+        when(employeeRepository.existsById(1L)).thenReturn(true);
+        doNothing().when(employeeRepository).deleteById(1L);
 
         // When
-        employeeService.deleteEmployee(id);
+        employeeService.deleteEmployee(1L);
 
         // Then
-        verify(employeeRepository).existsById(id);
-        verify(employeeRepository).deleteById(id);
+        verify(employeeRepository).existsById(1L);
+        verify(employeeRepository).deleteById(1L);
     }
 
     @Test
-    void givenNonExistingEmployee_whenDeleteEmployee_thenThrowException() {
+    void givenNonExistingEmployee_whenDeletingEmployee_thenThrowNotFoundException() {
         // Given
-        Long id = 1L;
-        when(employeeRepository.existsById(id)).thenReturn(false);
+        when(employeeRepository.existsById(1L)).thenReturn(false);
 
         // When/Then
-        assertThrows(EmployeeNotFoundException.class, () -> employeeService.deleteEmployee(id));
-        verify(employeeRepository).existsById(id);
+        assertThrows(EmployeeNotFoundException.class,
+                () -> employeeService.deleteEmployee(1L));
+        verify(employeeRepository).existsById(1L);
         verify(employeeRepository, never()).deleteById(anyLong());
     }
 }
