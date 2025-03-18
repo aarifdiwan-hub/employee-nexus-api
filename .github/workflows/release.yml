@@ -30,7 +30,9 @@ jobs:
       run: |
         npm install -g semantic-release @semantic-release/git @semantic-release/changelog @semantic-release/exec
         
-    - name: Release
+    - name: Build and Release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: npx semantic-release
+      run: |
+        ./mvnw clean package
+        npx semantic-release
