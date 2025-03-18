@@ -13,6 +13,41 @@ A Spring Boot REST API for employee management with optimistic locking for concu
 - OpenAPI (Swagger) for API documentation
 - Lombok for reducing boilerplate code
 
+## Semantic Versioning
+
+This project follows [Semantic Versioning 2.0.0](https://semver.org/). Version numbers are structured as MAJOR.MINOR.PATCH:
+
+- MAJOR version: Incremented for incompatible API changes
+- MINOR version: Added functionality in a backwards compatible manner
+- PATCH version: Backwards compatible bug fixes
+
+Commit messages follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
+
+- `feat:` New features (minor version)
+- `fix:` Bug fixes (patch version)
+- `BREAKING CHANGE:` Breaking API changes (major version)
+- `chore:` Maintenance tasks
+- `docs:` Documentation updates
+- `style:` Code style changes
+- `refactor:` Code refactoring
+- `perf:` Performance improvements
+- `test:` Test updates
+
+Example commit messages:
+```
+feat: add pagination to employee list endpoint
+fix: resolve concurrent modification conflict
+docs: update API documentation
+BREAKING CHANGE: modify employee response structure
+```
+
+Versioning is automated using semantic-release, which:
+1. Analyzes commit messages
+2. Determines version number
+3. Generates CHANGELOG.md
+4. Creates GitHub release
+5. Publishes artifacts
+
 ## Features
 
 - CRUD operations for employee management
