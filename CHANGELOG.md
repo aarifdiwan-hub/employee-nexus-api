@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/aarifdiwan-hub/employee-nexus-api/compare/v1.0.1...v1.1.0) (2025-03-18)
+
+
+### Features
+
+* add sematic versioning  ([fcdca56](https://github.com/aarifdiwan-hub/employee-nexus-api/commit/fcdca5642d5bba2496d107d33d9181095cb8882e))
+
 ## [1.0.1](https://github.com/aarifdiwan-hub/employee-nexus-api/compare/v1.0.0...v1.0.1) (2025-03-18)
 
 

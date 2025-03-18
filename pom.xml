@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.bmo</groupId>
 	<artifactId>employee-nexus-api</artifactId>
-	<version>1.0.1</version>
+	<version>1.1.0</version>
 	<name>employee-nexus-api</name>
 	<description>Demo project employee </description>
 	<packaging>jar</packaging>
