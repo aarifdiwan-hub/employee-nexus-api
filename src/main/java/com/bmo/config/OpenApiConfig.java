@@ -11,9 +11,20 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 
 
+/**
+ * Configuration class for OpenAPI documentation.
+ * Customizes Swagger UI and API documentation settings.
+ * Provides detailed API information and server configurations.
+ */
 @Configuration
 public class OpenApiConfig {
 
+    /**
+     * Creates and configures OpenAPI documentation bean.
+     * Sets up API information, contact details, and server configurations.
+     *
+     * @return Configured OpenAPI instance
+     */
     @Bean
     public OpenAPI employeeNexusOpenAPI() {
         Server devServer = new Server()
@@ -32,7 +43,7 @@ public class OpenApiConfig {
         Info info = new Info()
             .title("Employee Nexus API")
             .version("1.0.0")
-            .description("REST API for employee management with optimistic locking for concurrent modifications")
+            .description("REST API for employee management with optimistic locking")
             .contact(contact)
             .license(license);
 

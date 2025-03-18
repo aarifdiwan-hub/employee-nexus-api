@@ -18,6 +18,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @ExtendWith(MockitoExtension.class)
 class EmployeeServiceTest {
@@ -37,20 +42,7 @@ class EmployeeServiceTest {
         testDto = new EmployeeDto(1L, "Aarif Diwan", "Engineering", 1L);
     }
 
-    @Test
-    void givenExistingEmployees_whenFetchingAll_thenReturnEmployeeSummaries() {
-        // Given
-        List<EmployeeEntity> entities = List.of(testEntity);
-        when(employeeRepository.findAll()).thenReturn(entities);
 
-        // When
-        List<EmployeeDto> result = employeeService.getAllEmployees();
-
-        // Then
-        assertEquals(1, result.size());
-        assertEquals(testDto, result.get(0));
-        verify(employeeRepository).findAll();
-    }
 
     @Test
     void givenEmployeeIdExists_whenFetchingEmployeeDetails_thenReturnEmployeeSummary() {
@@ -147,5 +139,85 @@ class EmployeeServiceTest {
                 () -> employeeService.deleteEmployee(1L));
         verify(employeeRepository).existsById(1L);
         verify(employeeRepository, never()).deleteById(anyLong());
+    }
+
+    @Test
+    void givenExistingEmployees_whenFetchingAllWithPagination_thenReturnPagedEmployeeSummaries() {
+        // Given
+        List<EmployeeEntity> employees = List.of(
+            testEntity,
+            new EmployeeEntity(2L, "John Doe", "HR", 1L)
+        );
+        Page<EmployeeEntity> pagedEntities = new PageImpl<>(
+            employees,
+            PageRequest.of(0, 10, Sort.by("id").ascending()),
+            2
+        );
+        when(employeeRepository.findAll(any(Pageable.class))).thenReturn(pagedEntities);
+
+        // When
+        Page<EmployeeDto> result = employeeService.getAllEmployees(
+            PageRequest.of(0, 10, Sort.by("id").ascending())
+        );
+
+        // Then
+        assertEquals(2, result.getTotalElements());
+        assertEquals(1, result.getTotalPages());
+        assertEquals(10, result.getSize());
+        assertEquals(0, result.getNumber());
+        assertEquals(2, result.getContent().size());
+        
+        // Verify first employee
+        assertEquals(1L, result.getContent().get(0).id());
+        assertEquals("Aarif Diwan", result.getContent().get(0).name());
+        assertEquals("Engineering", result.getContent().get(0).department());
+        
+        // Verify second employee
+        assertEquals(2L, result.getContent().get(1).id());
+        assertEquals("John Doe", result.getContent().get(1).name());
+        assertEquals("HR", result.getContent().get(1).department());
+        
+        // Verify repository was called with correct parameters
+        verify(employeeRepository).findAll(any(Pageable.class));
+    }
+
+    @Test
+    void givenNoEmployees_whenFetchingAllWithPagination_thenReturnEmptyPage() {
+        // Given
+        Page<EmployeeEntity> emptyPage = new PageImpl<>(
+            List.of(),
+            PageRequest.of(0, 10),
+            0
+        );
+        when(employeeRepository.findAll(any(Pageable.class))).thenReturn(emptyPage);
+
+        // When
+        Page<EmployeeDto> result = employeeService.getAllEmployees(PageRequest.of(0, 10));
+
+        // Then
+        assertEquals(0, result.getTotalElements());
+        assertEquals(0, result.getTotalPages());
+        assertTrue(result.getContent().isEmpty());
+        verify(employeeRepository).findAll(any(Pageable.class));
+    }
+
+    @Test
+    void givenEmployees_whenFetchingWithCustomPageSize_thenReturnCorrectPageSize() {
+        // Given
+        List<EmployeeEntity> employees = List.of(testEntity);
+        Page<EmployeeEntity> pagedEntities = new PageImpl<>(
+            employees,
+            PageRequest.of(0, 5),
+            1
+        );
+        when(employeeRepository.findAll(any(Pageable.class))).thenReturn(pagedEntities);
+
+        // When
+        Page<EmployeeDto> result = employeeService.getAllEmployees(PageRequest.of(0, 5));
+
+        // Then
+        assertEquals(5, result.getSize());
+        assertEquals(1, result.getContent().size());
+        verify(employeeRepository).findAll(any(Pageable.class));
     }
 }

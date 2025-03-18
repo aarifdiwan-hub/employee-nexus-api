@@ -22,6 +22,7 @@ A Spring Boot REST API for employee management with optimistic locking for concu
 - Validation for employee data
 - OpenAPI documentation with custom configuration
 - Comprehensive test coverage
+- Paginated responses with metadata
 
 ## Prerequisites
 
@@ -60,26 +61,49 @@ The API documentation is available through Swagger UI:
 - Swagger UI: `http://localhost:8080/swagger-ui.html`
 - OpenAPI JSON: `http://localhost:8080/api-docs`
 
-Custom OpenAPI configuration includes:
-- Detailed API information
-- Contact information
-- License details
-- Server configurations
-
 ## API Endpoints
 
-| Method | URL | Description | Validation |
-|--------|-----|-------------|------------|
-| GET | `/api/employees` | Get all employees | N/A |
-| GET | `/api/employees/{id}` | Get employee by ID | Valid ID required |
-| POST | `/api/employees` | Create new employee | Name (2-100 chars), Department (2-50 chars) |
-| PUT | `/api/employees/{id}` | Update employee | Valid ID, Name, Department, Version for optimistic locking |
-| DELETE | `/api/employees/{id}` | Delete employee | Valid ID required |
+| Method | URL | Description | Request Parameters | Response Format |
+|--------|-----|-------------|-------------------|-----------------|
+| GET | `/api/employees` | Get all employees | `page` (default: 0), `size` (default: 10), `sort` (default: id,asc) | Paginated response with metadata |
+| GET | `/api/employees/{id}` | Get employee by ID | N/A | Single employee |
+| POST | `/api/employees` | Create new employee | N/A | Created employee |
+| PUT | `/api/employees/{id}` | Update employee | N/A | Updated employee |
+| DELETE | `/api/employees/{id}` | Delete employee | N/A | No content |
+
+### Pagination Response Format
+
+```json
+{
+  "content": [
+    {
+      "id": 1,
+      "name": "Example Name",
+      "department": "Example Dept",
+      "version": 1
+    }
+  ],
+  "metadata": {
+    "pageNumber": 0,
+    "pageSize": 10,
+    "totalElements": 1,
+    "totalPages": 1,
+    "first": true,
+    "last": true
+  }
+}
+```
+
+### Sort Parameters
+- Format: `property,direction`
+- Valid properties: `id`, `name`, `department`
+- Valid directions: `asc`, `desc`
+- Example: `sort=name,desc`
 
 ### Error Responses
 
 The API includes comprehensive error handling:
-- 400 Bad Request: Validation errors
+- 400 Bad Request: Validation errors or invalid sort parameters
 - 404 Not Found: Resource not found
 - 409 Conflict: Concurrent modification detected
 

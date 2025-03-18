@@ -7,17 +7,35 @@ import com.bmo.repository.EmployeeRepository;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
+/**
+ * Service layer for employee-related business logic.
+ * Handles data transformation between DTOs and entities.
+ * Implements transactional operations for data consistency.
+ */
 @Service
 public class EmployeeService {
     private final EmployeeRepository employeeRepository;
 
+    /**
+     * Constructor injection of employee repository.
+     *
+     * @param employeeRepository JPA repository for employee data access
+     */
     public EmployeeService(EmployeeRepository employeeRepository) {
         this.employeeRepository = employeeRepository;
     }
 
+    /**
+     * Converts an employee entity to DTO.
+     *
+     * @param entity Employee entity to convert
+     * @return DTO representation of the employee
+     */
     private EmployeeDto toDto(EmployeeEntity entity) {
         return new EmployeeDto(
             entity.getId(),
@@ -27,6 +45,12 @@ public class EmployeeService {
         );
     }
 
+    /**
+     * Converts an employee DTO to entity.
+     *
+     * @param dto DTO to convert
+     * @return Entity representation of the employee
+     */
     private EmployeeEntity toEntity(EmployeeDto dto) {
         return new EmployeeEntity(
             dto.id(),
@@ -36,15 +60,20 @@ public class EmployeeService {
         );
     }
 
+    /**
+     * Updates an existing entity with DTO data.
+     *
+     * @param entity Entity to update
+     * @param dto DTO containing new data
+     */
     private void updateEntityFromDto(EmployeeEntity entity, EmployeeDto dto) {
         entity.setName(dto.name());
         entity.setDepartment(dto.department());
     }
 
-    public List<EmployeeDto> getAllEmployees() {
-        return employeeRepository.findAll().stream()
-                .map(this::toDto)
-                .toList();
+    public Page<EmployeeDto> getAllEmployees(Pageable pageable) {
+        return employeeRepository.findAll(pageable)
+                .map(this::toDto);
     }
 
     public EmployeeDto getEmployeeById(Long id) {
