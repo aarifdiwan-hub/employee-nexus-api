@@ -17,6 +17,10 @@ spring:
       path: /h2-console
       settings:
         web-allow-others: false
+  security:
+    user:
+      name: admin
+      password: password
 
 server:
   port: 8080
@@ -34,6 +38,7 @@ springdoc:
     operationsSorter: method
     tagsSorter: alpha
     docExpansion: none
+  swagger-ui.csrf.enabled: false
 
 # Actuator endpoints for monitoring
 management:

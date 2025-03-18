@@ -1,13 +1,43 @@
 {
   "info": {
     "name": "Employee Nexus API",
-    "description": "Collection for testing Employee Nexus REST APIs",
+    "description": "Collection for testing Employee Nexus REST APIs with authentication",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "basic",
+    "basic": [
+      {
+        "key": "username",
+        "value": "admin",
+        "type": "string"
+      },
+      {
+        "key": "password",
+        "value": "password",
+        "type": "string"
+      }
+    ]
   },
   "item": [
     {
       "name": "Get All Employees",
       "request": {
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {
+              "key": "username",
+              "value": "admin",
+              "type": "string"
+            },
+            {
+              "key": "password",
+              "value": "password",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
@@ -65,29 +95,19 @@
               "last": true
             }
           }
+        },
+        {
+          "name": "Unauthorized Response",
+          "originalRequest": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8080/api/v1/employees"
+            }
+          },
+          "status": "Unauthorized",
+          "code": 401
         }
       ]
-    },
-    {
-      "name": "Get Employees (Sorted by Name)",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:8080/api/v1/employees?sort=name,desc",
-          "protocol": "http",
-          "host": ["localhost"],
-          "port": "8080",
-          "path": ["api", "v1", "employees"],
-          "query": [
-            {
-              "key": "sort",
-              "value": "name,desc",
-              "description": "Sort by name in descending order"
-            }
-          ]
-        }
-      }
     },
     {
       "name": "Get Employee by ID",
@@ -106,6 +126,21 @@
     {
       "name": "Create Employee",
       "request": {
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {
+              "key": "username",
+              "value": "admin",
+              "type": "string"
+            },
+            {
+              "key": "password",
+              "value": "password",
+              "type": "string"
+            }
+          ]
+        },
         "method": "POST",
         "header": [
           {
@@ -208,6 +243,13 @@
           "path": ["api", "v1", "employees"]
         }
       }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
     }
   ]
 }
