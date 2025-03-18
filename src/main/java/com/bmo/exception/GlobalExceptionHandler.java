@@ -7,22 +7,43 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import java.util.HashMap;
-
-
 import java.time.LocalDateTime;
 import java.util.Map;
 
+/**
+ * Global exception handler for the application.
+ * Provides centralized exception handling across all controllers.
+ * Implements consistent error response format.
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    /**
+     * Handles optimistic locking failures during concurrent modifications.
+     *
+     * @param ex The optimistic locking exception
+     * @return ResponseEntity with conflict status and error details
+     */
     @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
-    public ResponseEntity<Map<String, Object>> handleOptimisticLockingFailure(ObjectOptimisticLockingFailureException ex) {
+    public ResponseEntity<Map<String, Object>> handleOptimisticLockingFailure(
+            ObjectOptimisticLockingFailureException ex) {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(Map.of(
                         "timestamp", LocalDateTime.now(),
                         "message", "Concurrent modification detected. Please refresh and try again.",
                         "status", HttpStatus.CONFLICT.value()
+                ));
+    }
+
+    @ExceptionHandler(InvalidSortPropertyException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidSortPropertyException(InvalidSortPropertyException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(Map.of(
+                        "timestamp", LocalDateTime.now(),
+                        "message", ex.getMessage(),
+                        "status", HttpStatus.BAD_REQUEST.value()
                 ));
     }
 

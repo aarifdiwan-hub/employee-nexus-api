@@ -1,23 +1,113 @@
 {
   "info": {
     "name": "Employee Nexus API",
-    "description": "Collection for testing Employee Nexus REST APIs",
+    "description": "Collection for testing Employee Nexus REST APIs with authentication",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "basic",
+    "basic": [
+      {
+        "key": "username",
+        "value": "admin",
+        "type": "string"
+      },
+      {
+        "key": "password",
+        "value": "password",
+        "type": "string"
+      }
+    ]
   },
   "item": [
     {
       "name": "Get All Employees",
       "request": {
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {
+              "key": "username",
+              "value": "admin",
+              "type": "string"
+            },
+            {
+              "key": "password",
+              "value": "password",
+              "type": "string"
+            }
+          ]
+        },
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "http://localhost:8080/api/employees",
+          "raw": "http://localhost:8080/api/v1/employees?page=0&size=10&sort=id,asc",
           "protocol": "http",
           "host": ["localhost"],
           "port": "8080",
-          "path": ["api", "employees"]
+          "path": ["api", "v1", "employees"],
+          "query": [
+            {
+              "key": "page",
+              "value": "0",
+              "description": "Page number (0-based)"
+            },
+            {
+              "key": "size",
+              "value": "10",
+              "description": "Number of items per page"
+            },
+            {
+              "key": "sort",
+              "value": "id,asc",
+              "description": "Sort criteria (id|name|department|version,asc|desc)"
+            }
+          ]
+        },
+        "description": "Retrieves a paginated list of employees with metadata"
+      },
+      "response": [
+        {
+          "name": "Success Response",
+          "originalRequest": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8080/api/v1/employees?page=0&size=10&sort=id,asc"
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "body": {
+            "content": [
+              {
+                "id": 1,
+                "name": "Example Employee",
+                "department": "IT",
+                "version": 1
+              }
+            ],
+            "metadata": {
+              "pageNumber": 0,
+              "pageSize": 10,
+              "totalElements": 1,
+              "totalPages": 1,
+              "first": true,
+              "last": true
+            }
+          }
+        },
+        {
+          "name": "Unauthorized Response",
+          "originalRequest": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost:8080/api/v1/employees"
+            }
+          },
+          "status": "Unauthorized",
+          "code": 401
         }
-      }
+      ]
     },
     {
       "name": "Get Employee by ID",
@@ -25,17 +115,32 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "http://localhost:8080/api/employees/1",
+          "raw": "http://localhost:8080/api/v1/employees/1",
           "protocol": "http",
           "host": ["localhost"],
           "port": "8080",
-          "path": ["api", "employees", "1"]
+          "path": ["api", "v1", "employees", "1"]
         }
       }
     },
     {
       "name": "Create Employee",
       "request": {
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {
+              "key": "username",
+              "value": "admin",
+              "type": "string"
+            },
+            {
+              "key": "password",
+              "value": "password",
+              "type": "string"
+            }
+          ]
+        },
         "method": "POST",
         "header": [
           {
@@ -48,11 +153,11 @@
           "raw": "{\n    \"name\": \"foo\",\n    \"department\": \"bar\"\n}"
         },
         "url": {
-          "raw": "http://localhost:8080/api/employees",
+          "raw": "http://localhost:8080/api/v1/employees",
           "protocol": "http",
           "host": ["localhost"],
           "port": "8080",
-          "path": ["api", "employees"]
+          "path": ["api", "v1", "employees"]
         }
       }
     },
@@ -71,11 +176,11 @@
           "raw": "{\n    \"name\": \"foo-updated\",\n    \"department\": \"bar-updated\",\n    \"version\": 1\n}"
         },
         "url": {
-          "raw": "http://localhost:8080/api/employees/1",
+          "raw": "http://localhost:8080/api/v1/employees/1",
           "protocol": "http",
           "host": ["localhost"],
           "port": "8080",
-          "path": ["api", "employees", "1"]
+          "path": ["api", "v1", "employees", "1"]
         }
       }
     },
@@ -85,11 +190,11 @@
         "method": "DELETE",
         "header": [],
         "url": {
-          "raw": "http://localhost:8080/api/employees/1",
+          "raw": "http://localhost:8080/api/v1/employees/1",
           "protocol": "http",
           "host": ["localhost"],
           "port": "8080",
-          "path": ["api", "employees", "1"]
+          "path": ["api", "v1", "employees", "1"]
         }
       }
     },
@@ -108,11 +213,11 @@
           "raw": "{\n    \"name\": \"\",\n    \"department\": \"\"\n}"
         },
         "url": {
-          "raw": "http://localhost:8080/api/employees",
+          "raw": "http://localhost:8080/api/v1/employees",
           "protocol": "http",
           "host": ["localhost"],
           "port": "8080",
-          "path": ["api", "employees"]
+          "path": ["api", "v1", "employees"]
         }
       }
     },
@@ -131,13 +236,20 @@
           "raw": "{\n    \"name\": \"a\",\n    \"department\": \"b\"\n}"
         },
         "url": {
-          "raw": "http://localhost:8080/api/employees",
+          "raw": "http://localhost:8080/api/v1/employees",
           "protocol": "http",
           "host": ["localhost"],
           "port": "8080",
-          "path": ["api", "employees"]
+          "path": ["api", "v1", "employees"]
         }
       }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
     }
   ]
 }
