@@ -13,41 +13,6 @@ A Spring Boot REST API for employee management with optimistic locking for concu
 - OpenAPI (Swagger) for API documentation
 - Lombok for reducing boilerplate code
 
-## Semantic Versioning
-
-This project follows [Semantic Versioning 2.0.0](https://semver.org/). Version numbers are structured as MAJOR.MINOR.PATCH:
-
-- MAJOR version: Incremented for incompatible API changes
-- MINOR version: Added functionality in a backwards compatible manner
-- PATCH version: Backwards compatible bug fixes
-
-Commit messages follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
-
-- `feat:` New features (minor version)
-- `fix:` Bug fixes (patch version)
-- `BREAKING CHANGE:` Breaking API changes (major version)
-- `chore:` Maintenance tasks
-- `docs:` Documentation updates
-- `style:` Code style changes
-- `refactor:` Code refactoring
-- `perf:` Performance improvements
-- `test:` Test updates
-
-Example commit messages:
-```
-feat: add pagination to employee list endpoint
-fix: resolve concurrent modification conflict
-docs: update API documentation
-BREAKING CHANGE: modify employee response structure
-```
-
-Versioning is automated using semantic-release, which:
-1. Analyzes commit messages
-2. Determines version number
-3. Generates CHANGELOG.md
-4. Creates GitHub release
-5. Publishes artifacts
-
 ## Features
 
 - CRUD operations for employee management
@@ -60,6 +25,22 @@ Versioning is automated using semantic-release, which:
 - OpenAPI documentation with custom configuration
 - Comprehensive test coverage
 - Paginated responses with metadata
+- Automated semantic versioning and release management
+
+## Semantic Versioning
+
+This project follows [Semantic Versioning 2.0.0](https://semver.org/) for version management and [Conventional Commits](https://www.conventionalcommits.org/) for commit messages. Version numbers follow the MAJOR.MINOR.PATCH format.
+
+The version is managed through the `revision` property in pom.xml and is automatically updated by semantic-release based on commit messages.
+
+Versioning is automated using semantic-release, which:
+1. Analyzes commit messages
+2. Determines version number
+3. Generates CHANGELOG.md
+4. Creates GitHub release
+5. Publishes artifacts
+
+For detailed information about commit types (`feat`, `fix`, `BREAKING CHANGE`, etc.) and versioning rules, see our [Versioning Guide](https://www.conventionalcommits.org/en/v1.0.0/#specification).
 
 ## Prerequisites
 
@@ -70,7 +51,7 @@ Versioning is automated using semantic-release, which:
 
 1. Clone the repository:
 ```bash
-git clone [repository-url]
+git clone https://github.com/aarifdiwan-hub/employee-nexus-api.git
 ```
 
 2. Navigate to project directory:
@@ -85,16 +66,53 @@ cd employee-nexus-api
 
 The application will start on `http://localhost:8080`
 
+## Project Structure
+
+```
+src/
+├── main/
+│   ├── java/
+│   │   └── com/bmo/employeenexus/
+│   │       ├── config/
+│   │       │   ├── OpenApiConfig.java
+│   │       │   └── SecurityConfig.java
+│   │       ├── controller/
+│   │       │   └── EmployeeController.java
+│   │       ├── dto/
+│   │       │   ├── EmployeeDto.java
+│   │       │   └── PageResponseDto.java
+│   │       ├── exception/
+│   │       │   ├── GlobalExceptionHandler.java
+│   │       │   └── ResourceNotFoundException.java
+│   │       ├── mapper/
+│   │       │   └── EmployeeMapper.java
+│   │       ├── model/
+│   │       │   └── Employee.java
+│   │       ├── repository/
+│   │       │   └── EmployeeRepository.java
+│   │       ├── service/
+│   │       │   ├── EmployeeService.java
+│   │       │   └── EmployeeServiceImpl.java
+│   │       └── EmployeeNexusApplication.java
+│   └── resources/
+│       ├── application.yml
+│       └── logback-spring.xml
+└── test/
+    └── java/
+        └── com/bmo/employeenexus/
+            ├── controller/
+            │   └── EmployeeControllerTest.java
+            ├── service/
+            │   └── EmployeeServiceTest.java
+            └── EmployeeNexusApplicationTests.java
+```
+
 ## Authentication
 
 The API uses Basic Authentication:
 - Username: `admin`
 - Password: `password`
 
-Include these credentials in the Authorization header for all API requests:
-```
-Authorization: Basic YWRtaW46cGFzc3dvcmQ=
-```
 
 ## Database
 
@@ -102,7 +120,6 @@ The application uses H2 in-memory database:
 - JDBC URL: `jdbc:h2:mem:employeedb`
 - Username: `sa`
 - Password: `password`
-- H2 Console: `http://localhost:8080/h2-console`
 
 ## API Documentation
 
@@ -122,26 +139,14 @@ Note: Authentication is required to access the API documentation.
 | PUT | `/api/v1/employees/{id}` | Update employee | N/A | Updated employee |
 | DELETE | `/api/v1/employees/{id}` | Delete employee | N/A | No content |
 
-### Authentication Headers
-All requests must include Basic Authentication headers:
-```
-Authorization: Basic YWRtaW46cGFzc3dvcmQ=
-```
-
-### Sort Parameters
-- Format: `property,direction`
-- Valid properties: `id`, `name`, `department`
-- Valid directions: `asc`, `desc`
-- Example: `sort=name,desc`
-
-### Error Responses
+## Error Responses
 
 The API includes comprehensive error handling:
 - 400 Bad Request: Validation errors or invalid sort parameters
 - 401 Unauthorized: Missing or invalid authentication
 - 403 Forbidden: Insufficient permissions
 - 404 Not Found: Resource not found
-- 409 Conflict: Concurrent modification detected
+- 409 Conflict: Concurrent modification detected during update operations
 
 ## Testing
 
@@ -149,8 +154,17 @@ Run tests using:
 ```bash
 ./mvnw test
 ```
+## CI/CD
 
-### Postman Collection
+The project uses GitHub Actions for:
+- Building and testing on pull requests
+- Automated releases on main branch
+- Semantic versioning
+- Changelog generation
+- Artifact publishing
+
+
+## Postman Collection
 
 A Postman collection is available in the `postman` directory for testing all API endpoints. The collection includes:
 - Pre-configured authentication
@@ -158,28 +172,6 @@ A Postman collection is available in the `postman` directory for testing all API
 - Validation test cases
 - Error scenarios
 - Environment variables
-
-## Project Structure
-
-```
-src/
-├── main/
-│   ├── java/
-│   │   └── com/bmo/
-│   │       ├── config/
-│   │       │   └── SecurityConfig.java
-│   │       ├── controller/
-│   │       ├── exception/
-│   │       ├── model/
-│   │       └── service/
-│   └── resources/
-│       └── application.yml
-└── test/
-    └── java/
-        └── com/bmo/
-            ├── controller/
-            └── service/
-```
 
 ## License
 

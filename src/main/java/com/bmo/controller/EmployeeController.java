@@ -28,7 +28,7 @@ import com.bmo.dto.PageResponseDto;
  * Implements OpenAPI documentation for API visibility.
  */
 @RestController
-@RequestMapping("/api/v1/employees")
+@RequestMapping("/api/v1")
 @Tag(name = "Employee Management", description = "APIs for managing employees")
 public class EmployeeController {
     private final EmployeeService employeeService;
@@ -52,11 +52,8 @@ public class EmployeeController {
      * @return ResponseEntity containing paginated employee list
      * @throws InvalidSortPropertyException if sort property is invalid
      */
-    @GetMapping
-    @Operation(
-        summary = "Get all employees with pagination",
-        description = "Retrieves a paginated list of all employees in the system"
-    )
+    @GetMapping("/employees")  // Plural for collection
+    @Operation(summary = "Get all employees with pagination")
     @ApiResponse(
         responseCode = "200",
         description = "Successfully retrieved the paginated list of employees",
@@ -95,10 +92,8 @@ public class EmployeeController {
         }
     }
 
-    @Operation(
-        summary = "Get employee by ID",
-        description = "Retrieves an employee by their ID"
-    )
+    @GetMapping("/employee/{id}")  // Singular for single resource
+    @Operation(summary = "Get employee by ID")
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
@@ -111,17 +106,14 @@ public class EmployeeController {
             content = @Content
         )
     })
-    @GetMapping("/{id}")
     public ResponseEntity<EmployeeDto> getEmployeeById(
         @Parameter(description = "ID of the employee to retrieve") @PathVariable Long id
     ) {
         return ResponseEntity.ok(employeeService.getEmployeeById(id));
     }
 
-    @Operation(
-        summary = "Create new employee",
-        description = "Creates a new employee in the system"
-    )
+    @PostMapping("/employee")
+    @Operation(summary = "Create new employee")
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
@@ -134,15 +126,12 @@ public class EmployeeController {
             content = @Content
         )
     })
-    @PostMapping
     public ResponseEntity<EmployeeDto> createEmployee(@Valid @RequestBody EmployeeDto employee) {
         return ResponseEntity.ok(employeeService.createEmployee(employee));
     }
 
-    @Operation(
-        summary = "Update employee",
-        description = "Updates an existing employee's information"
-    )
+    @PutMapping("/employee/{id}")
+    @Operation(summary = "Update employee")
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
@@ -160,17 +149,14 @@ public class EmployeeController {
             content = @Content
         )
     })
-    @PutMapping("/{id}")
     public ResponseEntity<EmployeeDto> updateEmployee(
         @PathVariable Long id,
         @Valid @RequestBody EmployeeDto employee) {
         return ResponseEntity.ok(employeeService.updateEmployee(id, employee));
     }
 
-    @Operation(
-        summary = "Delete employee",
-        description = "Deletes an employee from the system"
-    )
+    @DeleteMapping("/employee/{id}")
+    @Operation(summary = "Delete employee")
     @ApiResponses({
         @ApiResponse(
             responseCode = "204",
@@ -183,7 +169,6 @@ public class EmployeeController {
             content = @Content
         )
     })
-    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEmployee(
         @Parameter(description = "ID of the employee to delete") @PathVariable Long id
     ) {

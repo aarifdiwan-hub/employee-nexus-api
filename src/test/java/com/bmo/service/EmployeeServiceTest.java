@@ -10,6 +10,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.*;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,11 +20,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
 @ExtendWith(MockitoExtension.class)
 class EmployeeServiceTest {
@@ -220,4 +217,41 @@ class EmployeeServiceTest {
         assertEquals(1, result.getContent().size());
         verify(employeeRepository).findAll(any(Pageable.class));
     }
+
+    @Test
+    void givenConcurrentUpdates_whenUpdatingEmployee_thenThrowOptimisticLockingException() throws InterruptedException {
+        // Given
+        EmployeeEntity originalEntity = new EmployeeEntity(1L, "Original Name", "Engineering", 1L);
+        originalEntity.setVersion(1L);  // Set initial version
+        
+        // Simulate first read
+        when(employeeRepository.findById(1L))
+            .thenReturn(Optional.of(originalEntity));
+        
+        // Simulate concurrent update that increases version
+        when(employeeRepository.save(any(EmployeeEntity.class)))
+            .thenAnswer(invocation -> {
+                EmployeeEntity savedEntity = invocation.getArgument(0);
+                if (savedEntity.getVersion() != 1L) {
+                    throw new ObjectOptimisticLockingFailureException(EmployeeEntity.class, savedEntity.getId());
+                }
+                savedEntity.setVersion(2L);
+                return savedEntity;
+            });
+
+        // When/Then
+        // First update should succeed
+        EmployeeDto firstUpdate = new EmployeeDto(1L, "First Update", "Engineering", 1L);
+        assertDoesNotThrow(() -> employeeService.updateEmployee(1L, firstUpdate));
+
+        // Second concurrent update should fail
+        EmployeeDto secondUpdate = new EmployeeDto(1L, "Second Update", "Engineering", 1L);
+        assertThrows(ObjectOptimisticLockingFailureException.class, 
+            () -> employeeService.updateEmployee(1L, secondUpdate));
+
+        // Verify repository calls
+        verify(employeeRepository, times(2)).findById(1L);
+        verify(employeeRepository, times(2)).save(any(EmployeeEntity.class));
+    }
+
 }
