@@ -59,8 +59,12 @@ git clone https://github.com/aarifdiwan-hub/employee-nexus-api.git
 ```bash
 cd employee-nexus-api
 ```
+3. Build the application:
+```bash
+./mvnw clean install
+```
 
-3. Run the application:
+4Run the application:
 ```bash
 ./mvnw spring-boot:run
 ```
