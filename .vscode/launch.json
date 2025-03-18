@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Run Employee Nexus API",
+            "request": "launch",
+            "mainClass": "com.bmo.EmployeeNexusApiApplication",
+            "projectName": "employee-nexus-api",
+            "env": {
+                "SPRING_PROFILES_ACTIVE": "local"
+            }
+        }
+    ]
+}
