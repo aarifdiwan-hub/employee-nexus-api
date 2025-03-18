@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/aarifdiwan-hub/employee-nexus-api/compare/v1.0.0...v1.0.1) (2025-03-18)
+
+
+### Bug Fixes
+
+* test workflow 5 ([53b6bf0](https://github.com/aarifdiwan-hub/employee-nexus-api/commit/53b6bf02e0eac309a73f9ffcedab6a75c204143c))
+
 # 1.0.0 (2025-03-18)
 
 
