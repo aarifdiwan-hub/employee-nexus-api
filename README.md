@@ -25,6 +25,7 @@ A Spring Boot REST API for employee management with optimistic locking for concu
 - OpenAPI documentation with custom configuration
 - Comprehensive test coverage
 - Paginated responses with metadata
+
 - Automated semantic versioning and release management
 
 ## Semantic Versioning
@@ -172,6 +173,7 @@ A Postman collection is available in the `postman` directory for testing all API
 - Validation test cases
 - Error scenarios
 - Environment variables
+
 
 ## License
 
