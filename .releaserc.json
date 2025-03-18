@@ -6,7 +6,7 @@
     "@semantic-release/changelog",
     ["@semantic-release/exec", {
       "prepareCmd": "./mvnw versions:set -DnewVersion=${nextRelease.version} -DgenerateBackupPoms=false",
-      "publishCmd": "cp target/employee-nexus-api-${nextRelease.version}.jar employee-nexus-api.jar"
+      "publishCmd": "ls target/ && cp target/*${nextRelease.version}.jar employee-nexus-api.jar"
     }],
     ["@semantic-release/github", {
       "assets": [
