@@ -116,7 +116,7 @@ class EmployeeControllerTest {
         when(employeeService.getEmployeeById(1L)).thenReturn(testEmployee);
 
         // When/Then
-        mockMvc.perform(securedRequest(get("/api/v1/employees/1"))
+        mockMvc.perform(securedRequest(get("/api/v1/employee/1"))
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id", is(1)))
@@ -133,7 +133,7 @@ class EmployeeControllerTest {
                 .thenThrow(new EmployeeNotFoundException("Employee not found with id: 1"));
 
         // When/Then
-        mockMvc.perform(securedRequest(get("/api/v1/employees/1"))
+        mockMvc.perform(securedRequest(get("/api/v1/employee/1"))
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound());
 
@@ -147,7 +147,7 @@ class EmployeeControllerTest {
         when(employeeService.createEmployee(any(EmployeeDto.class))).thenReturn(testEmployee);
 
         // When/Then
-        mockMvc.perform(securedRequest(post("/api/v1/employees"))
+        mockMvc.perform(securedRequest(post("/api/v1/employee"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(newEmployee)))
             .andExpect(status().isOk())
@@ -164,7 +164,7 @@ class EmployeeControllerTest {
         EmployeeDto invalidEmployee = new EmployeeDto(null, "", "", null);
 
         // When/Then
-        mockMvc.perform(securedRequest(post("/api/v1/employees"))
+        mockMvc.perform(securedRequest(post("/api/v1/employee"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidEmployee)))
             .andExpect(status().isBadRequest());
@@ -179,7 +179,7 @@ class EmployeeControllerTest {
         when(employeeService.updateEmployee(eq(1L), any(EmployeeDto.class))).thenReturn(updateEmployee);
 
         // When/Then
-        mockMvc.perform(securedRequest(put("/api/v1/employees/1"))
+        mockMvc.perform(securedRequest(put("/api/v1/employee/1"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateEmployee)))
             .andExpect(status().isOk())
@@ -197,7 +197,7 @@ class EmployeeControllerTest {
                 .thenThrow(new EmployeeNotFoundException("Employee not found with id: 1"));
 
         // When/Then
-        mockMvc.perform(securedRequest(put("/api/v1/employees/1"))
+        mockMvc.perform(securedRequest(put("/api/v1/employee/1"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateEmployee)))
             .andExpect(status().isNotFound());
@@ -211,7 +211,7 @@ class EmployeeControllerTest {
         doNothing().when(employeeService).deleteEmployee(1L);
 
         // When/Then
-        mockMvc.perform(securedRequest(delete("/api/v1/employees/1")))
+        mockMvc.perform(securedRequest(delete("/api/v1/employee/1")))
             .andExpect(status().isNoContent());
 
         verify(employeeService).deleteEmployee(1L);
@@ -224,24 +224,27 @@ class EmployeeControllerTest {
                 .when(employeeService).deleteEmployee(1L);
 
         // When/Then
-        mockMvc.perform(securedRequest(delete("/api/v1/employees/1")))
+        mockMvc.perform(securedRequest(delete("/api/v1/employee/1")))
             .andExpect(status().isNotFound());
 
         verify(employeeService).deleteEmployee(1L);
     }
 
     @Test
-    void givenConcurrentModification_whenUpdatingDetails_thenReturnConflict() throws Exception {
+    void givenConcurrentModification_whenUpdatingDetails_thenReturnConflictWithDetails() throws Exception {
         // Given
         EmployeeDto updateEmployee = new EmployeeDto(1L, "Foo Updated", "IT", 1L);
         when(employeeService.updateEmployee(eq(1L), any(EmployeeDto.class)))
                 .thenThrow(new ObjectOptimisticLockingFailureException(EmployeeDto.class, 1L));
 
         // When/Then
-        mockMvc.perform(securedRequest(put("/api/v1/employees/1"))
+        mockMvc.perform(securedRequest(put("/api/v1/employee/1"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateEmployee)))
-            .andExpect(status().isConflict());
+            .andExpect(status().isConflict())
+            .andExpect(jsonPath("$.message").value("Concurrent modification detected. Please refresh and try again."))
+            .andExpect(jsonPath("$.status").value(409))
+            .andExpect(jsonPath("$.timestamp").exists());
 
         verify(employeeService).updateEmployee(eq(1L), any(EmployeeDto.class));
     }
