@@ -82,18 +82,16 @@ src/
 │   │       ├── dto/
 │   │       │   ├── EmployeeDto.java
 │   │       │   └── PageResponseDto.java
+│   │       ├── entity/
+│   │       │   ├── EmployeeEntity.java
 │   │       ├── exception/
 │   │       │   ├── GlobalExceptionHandler.java
-│   │       │   └── ResourceNotFoundException.java
-│   │       ├── mapper/
-│   │       │   └── EmployeeMapper.java
-│   │       ├── model/
-│   │       │   └── Employee.java
+│   │       │   ├── InvalidSortPropertyException.java
+│   │       │   └── EmployeeNotFoundException.java
 │   │       ├── repository/
 │   │       │   └── EmployeeRepository.java
 │   │       ├── service/
 │   │       │   ├── EmployeeService.java
-│   │       │   └── EmployeeServiceImpl.java
 │   │       └── EmployeeNexusApplication.java
 │   └── resources/
 │       ├── application.yml
@@ -101,11 +99,12 @@ src/
 └── test/
     └── java/
         └── com/bmo/employeenexus/
+            ├── config/
+            │   └── TestSecurityConfig.java
             ├── controller/
             │   └── EmployeeControllerTest.java
             ├── service/
-            │   └── EmployeeServiceTest.java
-            └── EmployeeNexusApplicationTests.java
+            │   └── EmployeeServiceTest.java            
 ```
 
 ## Authentication
